@@ -1,0 +1,70 @@
+---
+title: "Hausaufgabe2_wessel.Rmd"
+output: html_notebook
+---
+```{r}
+library(tidyverse)
+```
+
+```{r}
+books <- BX_Books %>%
+  select(ISBN,`Book-Title`,`Book-Author`,`Year-Of-Publication`,Publisher)
+```
+
+```{r}
+ratings <- BX_Book_Ratings %>%
+  left_join(BX_Books)
+```
+
+```{r}
+AnzahlBooks <-
+  ratings %>%
+  group_by(Publisher) %>%
+  summarise(AnzahlBooks = n())
+```
+
+
+
+```{r}
+AnzahlRatings <- books %>%
+  group_by(Publisher) %>%
+  summarise(AnzahlBewertungen = n()) %>%
+  arrange(desc(AnzahlBewertungen))
+```
+```{r}
+Verlage <- AnzahlBooks %>%
+  right_join(AnzahlRatings)
+```
+
+
+```{r}
+plot(Verlage$AnzahlBooks ~ Verlage$AnzahlBewertungen)
+fit <- lm(Verlage$AnzahlBooks ~ Verlage$AnzahlBewertungen)
+abline(fit)
+```
+#Haben ältere Bücher mehr Ratings, weil sie mehr Zeit haben, um Ratings zu sammeln?
+```{r}
+ratings %>%
+  group_by(`Year-Of-Publication`) %>%
+  summarise(AnzahlBewertungen = n()) %>%
+  arrange((`Year-Of-Publication`))
+```
+Es gibt keinen direkten Zusammenhang zwischen dem Publikationsdatum und der Anzahl der Bewertungen. Vor allem Bücher die zwischen 1990 und 2004 erschienen sind haben die meisten Bewertungen erhalten. Vor 1990 nehmen die Bewertungen eher ab als zu.
+
+```{r}
+publication <- ratings %>%
+  group_by(`Year-Of-Publication`) %>%
+  filter(`Year-Of-Publication` > 1895) %>%
+  filter(`Year-Of-Publication` < 2025) %>%
+  summarise(AnzahlBewertungen = n()) %>%
+  arrange((`Year-Of-Publication`))
+```
+```{r}
+JahrBewertung <- books %>%
+  right_join(publication)
+```
+```{r}
+plot(JahrBewertung$`Year-Of-Publication` ~ JahrBewertung$AnzahlBewertungen)
+fit <- lm(JahrBewertung$`Year-Of-Publication` ~ JahrBewertung$AnzahlBewertungen)
+abline(fit)
+```
