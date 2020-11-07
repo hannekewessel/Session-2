@@ -24,13 +24,14 @@ AnzahlBooks <-
 ```
 
 
-
+#Gibt es eine lineare Beziehung zwischen Anzahl Bücher pro Publisher und Anzahl Ratings, die die Bücher eines Publishers erhalten? 
 ```{r}
 AnzahlRatings <- books %>%
   group_by(Publisher) %>%
   summarise(AnzahlBewertungen = n()) %>%
   arrange(desc(AnzahlBewertungen))
 ```
+Es lässt sich eine lineare Regression bilden. Je mehr Bücher ein Verlag hat, desto mehr streut sich aber auch die Anzahl der Bewertungen auf beiden Seiten der Gerade. Es gibt also einen Zusammenhang, jedoch ist dieser nicht allzu ausschlaggebend.
 ```{r}
 Verlage <- AnzahlBooks %>%
   right_join(AnzahlRatings)
